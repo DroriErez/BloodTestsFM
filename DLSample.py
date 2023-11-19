@@ -17,4 +17,4 @@ plt.show()
 demographics_english.df['living_place_today'].value_counts().plot(kind='pie')
 plt.show()
 
-
+gender_dictionary = {1:'male', 0:'female'}

@@ -186,6 +186,8 @@ models_definition = [
 ]
 
 
+distances = []
+
 for model_definition in models_definition:
 
     model_performance_df = pd.DataFrame(columns=["Test","Pearson","MSE"])
@@ -197,7 +199,7 @@ for model_definition in models_definition:
     else:
         filled_matrix = np.copy(filtered_data_matrix)
 
-
+    correlation_v = np.empty(filtered_data_matrix.shape[1])
 
     for col in range(filtered_data_matrix.shape[1]):
         X,Y = prepare_matrix_to_linear_regression(filtered_data_matrix,filled_matrix,col)
@@ -205,7 +207,11 @@ for model_definition in models_definition:
         if model_definition['model'] == 'linear':
             y_pred,mse,pearson = linear_regression_model(X,Y)
 
+        correlation_v[col] = pearson
         model_performance_df.loc[col] = [FILTERED_BT_LABELS[col],pearson,mse]
+
+    distance = np.linalg.norm(np.ones(filtered_data_matrix.shape[1]) - correlation_v)
+    distances.append(distance)
 
     filename = "ModelPerformance_"+model_definition['model']
     if (model_definition["imputation"]):
@@ -225,6 +231,10 @@ for model_definition in models_definition:
 
 #     y_pred,mse,pearson =light_gbm_model(X,Y)
 
+sorted_indices = np.argsort(distances)
+
+for i in sorted_indices:
+    print (models_definition[i],distances[i])
 
 
 
